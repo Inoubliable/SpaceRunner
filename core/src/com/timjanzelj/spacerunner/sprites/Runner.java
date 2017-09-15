@@ -13,7 +13,7 @@ import com.timjanzelj.spacerunner.screens.PlayScreen;
  */
 public class Runner extends Sprite {
 
-    private static final int GRAVITY = -16;
+    private static final int GRAVITY = -24;
     private static final int MAX_JUMPS = 4;
 
     private SpaceRunner game;
@@ -127,7 +127,7 @@ public class Runner extends Sprite {
 
     public void jump() {
         if(jump_count < MAX_JUMPS) {
-            velocity.y = 270;
+            velocity.y = 510;
             jump_count++;
         }
     }

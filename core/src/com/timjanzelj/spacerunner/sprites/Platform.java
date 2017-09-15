@@ -34,11 +34,11 @@ public class Platform extends Sprite {
         return platform.getHeight();
     }
 
-    public void right() {
-        position.x += 3;
+    public void right(float speed) {
+        position.x -= speed * 2;
     }
 
-    public void left() {
-        position.x -= 3;
+    public void left(float speed) {
+        position.x -= speed * 2;
     }
 }
