@@ -30,6 +30,7 @@ public class PlayScreen implements Screen {
     private Texture bg;
     private ArrayList<Platform> platforms;
     private ArrayList<Cookie> cookies;
+    private ArrayList<Cookie> cookiesToPick;
     private ArrayList<Cookie> cookiesToRemove;
     private ArrayList<Enemy> enemies;
     private Runner runner;
@@ -51,24 +52,24 @@ public class PlayScreen implements Screen {
         bg = new Texture("sr_background.png");
         platforms = new ArrayList<Platform>();
         platforms.add(new Platform(150, 100));
-        platforms.add(new Platform(410, 180));
-        platforms.add(new Platform(680, 120));
-        platforms.add(new Platform(920, 210));
-        platforms.add(new Platform(1200, 130));
-        platforms.add(new Platform(1440, 220));
-        platforms.add(new Platform(1700, 150));
-        platforms.add(new Platform(1930, 240));
-        platforms.add(new Platform(2200, 160));
-        platforms.add(new Platform(2510, 120));
-        platforms.add(new Platform(2780, 190));
-        platforms.add(new Platform(3020, 210));
-        platforms.add(new Platform(3270, 100));
-        platforms.add(new Platform(3570, 190));
-        platforms.add(new Platform(3870, 180));
-        platforms.add(new Platform(4180, 120));
-        platforms.add(new Platform(4490, 120));
-        platforms.add(new Platform(4770, 100));
-        platforms.add(new Platform(5070, 190));
+        platforms.add(new Platform(510, 180));
+        platforms.add(new Platform(880, 120));
+        platforms.add(new Platform(1220, 210));
+        platforms.add(new Platform(1600, 130));
+        platforms.add(new Platform(1940, 220));
+        platforms.add(new Platform(2300, 150));
+        platforms.add(new Platform(2630, 240));
+        platforms.add(new Platform(3000, 160));
+        platforms.add(new Platform(3410, 120));
+        platforms.add(new Platform(3780, 190));
+        platforms.add(new Platform(4220, 210));
+        platforms.add(new Platform(4570, 100));
+        platforms.add(new Platform(4970, 190));
+        platforms.add(new Platform(5470, 180));
+        platforms.add(new Platform(5880, 120));
+        platforms.add(new Platform(6290, 120));
+        platforms.add(new Platform(6670, 100));
+        platforms.add(new Platform(7070, 190));
         cookies = new ArrayList<Cookie>();
         enemies = new ArrayList<Enemy>();
 
@@ -87,6 +88,7 @@ public class PlayScreen implements Screen {
             enemyY = y + platforms.get(i).getH();
             enemies.add(new Enemy(enemyX, enemyY));
         }
+        cookiesToPick = new ArrayList<Cookie>();
         cookiesToRemove = new ArrayList<Cookie>();
         for (int i = 3; i <= platforms.size(); i += 3) {
             x = (int)platforms.get(i).getPosition().x;
@@ -191,7 +193,19 @@ public class PlayScreen implements Screen {
         for (Cookie cookie: cookies) {
             if (runner.getPosition().x + runner.getW() > cookie.getPosition().x && runner.getPosition().x < (cookie.getPosition().x + cookie.getW())) {
                 if ((cookie.getPosition().y + cookie.getH()) > runner.getPosition().y && cookie.getPosition().y < runner.getPosition().y + runner.getH()) {
-                    cookiesToRemove.add(cookie);
+
+                    boolean alreadyPicked = false;
+                    for (Cookie cookieToPick:cookiesToPick) {
+                        if(cookie == cookieToPick) {
+                            alreadyPicked = true;
+                        }
+                    }
+
+                    if(alreadyPicked) {
+                        continue;
+                    }
+
+                    cookiesToPick.add(cookie);
 
                     score++;
                     scoreText = "" + score;
@@ -199,7 +213,7 @@ public class PlayScreen implements Screen {
             }
         }
         for (Enemy enemy: enemies) {
-            Rectangle enemyRectangle = new Rectangle(enemy.getPosition().x + (float)(enemy.getW() * 0.15), enemy.getPosition().y, (float)(enemy.getW() * 0.7), enemy.getH());
+            Rectangle enemyRectangle = new Rectangle(enemy.getPosition().x + (float)(enemy.getW() * 0.17), enemy.getPosition().y, (float)(enemy.getW() * 0.66), enemy.getH());
             if (Intersector.overlaps(runnerRectangle, enemyRectangle)) {
                 runner.gameOver(score);
             }
@@ -223,6 +237,27 @@ public class PlayScreen implements Screen {
             game.batch.draw(platform.getTexture(), platform.getPosition().x, platform.getPosition().y);
         }
         for (Cookie cookie:cookies) {
+            boolean alreadyPicked = false;
+            for (Cookie cookieToPick:cookiesToPick) {
+                if(cookie == cookieToPick) {
+                    // animate cookie
+                    cookie.pick();
+                    if(cookie.alpha > 0) {
+                        Color c = game.batch.getColor();
+                        game.batch.setColor(c.r, c.g, c.b, cookie.alpha);
+                        game.batch.draw(cookie.getTexture(), cookie.getPosition().x, cookie.getPosition().y);
+                        c = game.batch.getColor();
+                        game.batch.setColor(c.r, c.g, c.b, 1);//set alpha to 1
+                    } else {
+                        cookiesToRemove.add(cookie);
+                    }
+                    alreadyPicked = true;
+                }
+            }
+
+            if(alreadyPicked) {
+                continue;
+            }
             game.batch.draw(cookie.getTexture(), cookie.getPosition().x, cookie.getPosition().y);
         }
         for (Enemy enemy:enemies) {

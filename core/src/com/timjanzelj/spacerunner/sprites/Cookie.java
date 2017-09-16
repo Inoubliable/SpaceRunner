@@ -13,9 +13,12 @@ public class Cookie extends Sprite {
 
     private Texture cookie;
 
+    public float alpha;
+
     public Cookie(int x, int y) {
         position = new Vector2(x, y);
         cookie = new Texture("cookie.png");
+        alpha = 1;
     }
 
     public Texture getTexture() {
@@ -40,6 +43,11 @@ public class Cookie extends Sprite {
 
     public void left(float speed) {
         position.x -= speed * 2;
+    }
+
+    public void pick() {
+        position.y += 8;
+        alpha -= 0.04;
     }
 
     public void dispose() {
